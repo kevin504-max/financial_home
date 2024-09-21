@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', lambda request: render(request, 'index.html'), name='index'),
     path('categoria/', include('categoria.urls')),
+    path('recorrencia/', include('recorrencia.urls')),
 ]

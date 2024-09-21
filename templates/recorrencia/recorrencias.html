@@ -1,0 +1,23 @@
+<h1>Lista de Recorrências</h1>
+<a href="{% url 'recorrencia_create' %}">Nova Recorrência</a>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Intervalo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recorrencia in recorrencias %}
+        <tr>
+            <td>{{ recorrencia.nome }}</td>
+            <td>{{ recorrencia.intervalo }}</td>
+            <td>
+                <a href="{% url 'recorrencia_update' recorrencia.pk %}">Editar</a>
+                <a href="{% url 'recorrencia_delete' recorrencia.pk %}">Deletar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

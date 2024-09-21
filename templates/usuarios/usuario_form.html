@@ -1,4 +1,4 @@
-<h1>{% if form.instance.pk %}Editar{% else %}Nova{% endif %} Recorrencia</h1>
+<h1>{% if form.instance.pk %}Editar{% else %}Novo{% endif %} Usuario</h1>
 <form method="POST">
   {% csrf_token %}
   {{ form.as_p }}

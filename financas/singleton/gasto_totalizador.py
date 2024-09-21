@@ -1,3 +1,4 @@
+from utilitarios.filtros import formatar_dinheiro  
 class GastoTotalizador:
     _instance = None
 
@@ -7,4 +8,5 @@ class GastoTotalizador:
         return cls._instance
 
     def calcular_total(self, gastos):
-        return sum(gasto.valor for gasto in gastos)
+        total = sum(gasto.valor for gasto in gastos)
+        return formatar_dinheiro(total) 

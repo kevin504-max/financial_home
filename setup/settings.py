@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'metodopagamento',
     'recorrencia',
     'categoria',
+    'utilitarios',
 ]
 
 MIDDLEWARE = [

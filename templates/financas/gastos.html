@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    
 <body>
     <h1>Lista de Gastos</h1>
     <a href="{% url 'gastos_create' %}">Adicionar Novo Gasto</a>
@@ -22,8 +21,8 @@
             {% for gasto in gastos %}
             <tr>
                 <td>{{ gasto.descricao }}</td>
-                <td>{{ gasto.valor }}</td>
-                <td>{{ gasto.data }}</td>
+                <td>{{ gasto.valor_formatado }}</td>
+                <td>{{ gasto.data|date:"d/m/Y" }}</td>
                 <td>{{ gasto.categoria.nome }}</td>
                 <td>{{ gasto.metodo_pagamento.nome }}</td>
                 <td>{{ gasto.recorrencia.nome }}</td>
@@ -40,7 +39,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <h2>Total de Gastos: {{ total_gastos }}</h2>
+    <h2>Total de Gastos: {{ total }}</h2>
 </body>
 </html>

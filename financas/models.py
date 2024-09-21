@@ -10,5 +10,5 @@ class Gastos(models.Model):
     usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE, null=True)  
 
     def __str__(self):
-        return self.descricao
+        return f"{self.descricao} - {self.valor} - {self.data} - {self.categoria} - {self.metodo_pagamento} - {self.usuario} - {self.recorrencia}"
 

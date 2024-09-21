@@ -7,13 +7,13 @@ from categoria.models import Categoria
 from metodopagamento.models import MetodoPagamento
 from recorrencia.models import Recorrencia 
 from usuarios.models import Usuario
+from utilitarios.filtros import formatar_dinheiro
 
 def gastos_create(request):
     form = GastosForm(request.POST or None)
     
     if form.is_valid():
         dados = form.cleaned_data
-        
         novo_gasto = GastoFactory.criar_gasto(**dados)
         novo_gasto.save()
 
@@ -33,6 +33,8 @@ def gastos_create(request):
 # Read (List)
 def gastos_list(request):
     gastos = Gastos.objects.all()
+    for gasto in gastos:
+        gasto.valor_formatado = formatar_dinheiro(gasto.valor)
     totalizador = GastoTotalizador()
     total = totalizador.calcular_total(gastos)
     return render(request, 'financas/gastos.html', {'gastos': gastos, 'total': total})

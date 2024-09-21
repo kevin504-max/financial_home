@@ -23,4 +23,5 @@ urlpatterns = [
     path('', lambda request: render(request, 'index.html'), name='index'),
     path('categoria/', include('categoria.urls')),
     path('recorrencia/', include('recorrencia.urls')),
+    path('metodo_pagamento/', include('metodopagamento.urls')),
 ]

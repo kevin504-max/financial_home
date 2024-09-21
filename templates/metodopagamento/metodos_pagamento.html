@@ -1,0 +1,23 @@
+<h1>Lista de Métodos de Pagamento</h1>
+<a href="{% url 'metodo_pagamento_create' %}">Novo Método de Pagamento</a>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for metodo_pagamento in metodos_pagamento %}
+        <tr>
+            <td>{{ metodo_pagamento.nome }}</td>
+            <td>{{ metodo_pagamento.descricao }}</td>
+            <td>
+                <a href="{% url 'metodo_pagamento_update' metodo_pagamento.pk %}">Editar</a>
+                <a href="{% url 'metodo_pagamento_delete' metodo_pagamento.pk %}">Deletar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

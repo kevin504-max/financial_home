@@ -2,5 +2,7 @@ from django.contrib import admin
 
 from .models import Gastos
 
-admin.site.register(Gastos)
-# Register your models here.
+class GastosAdmin(admin.ModelAdmin):
+    list_display = ('id','descricao','valor','data','metodo_pagamento','categoria','recorrencia','usuario')
+
+admin.site.register(Gastos, GastosAdmin)

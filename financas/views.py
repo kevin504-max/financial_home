@@ -10,7 +10,7 @@ from usuarios.models import Usuario
 from utilitarios.filtros import formatar_dinheiro
 
 def home(request):
-    return render(request, 'users/home.html')
+    return render(request, 'home.html')
 
 def gastos_create(request):
     form = GastosForm(request.POST or None)

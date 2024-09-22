@@ -10,7 +10,7 @@
             <i class="fa fa-plus mr-2"></i> Novo Usuário
         </a>
     </p>
-    <!-- Tabela para listar os usuários -->
+
     <div class="input-group mb-3 mt-4" style="width: 25%;">
         <input type="text" class="form-control" placeholder="Pesquisar por usuário" aria-label="Pesquisar por nome ou e-mail" aria-describedby="button-addon2">
         <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
@@ -28,7 +28,7 @@
         {% if usuarios %}
         <tbody>
             {% for usuario in usuarios %}
-            <tr>
+            <tr data-user-id="{{ usuario.pk }}">
                 <td>{{ usuario.nome }}</td>
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.created_at|date:"d/m/Y - H:i" }}</td>
@@ -40,11 +40,20 @@
                         class="btn btn-sm btn-secondary" 
                         onclick="populateUpdateModal('{{ usuario.pk }}', '{{ usuario.nome }}', '{{ usuario.email }}');"
                     >
-                        <i class="fa fa-pen"></i></a>
-                    <a href="{% url 'usuario_delete' usuario.pk %}" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                        <i class="fa fa-pen"></i>
+                    </a>
+                    
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#excluirUsuarioModal" 
+                        class="btn btn-sm btn-danger" 
+                        onclick="setUsuarioIdParaExcluir('{{ usuario.pk }}');">
+                        <i class="fa fa-trash"></i>
+                    </a>
                 </td>
             </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>
         {% else %}
         <tbody>
@@ -124,6 +133,29 @@
         </div>
     </div>
     
+    <!-- Modal para excluir usuário -->
+    <div class="modal fade" id="excluirUsuarioModal" tabindex="-1" aria-labelledby="excluirUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excluirUsuarioModalLabel">Excluir Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você tem certeza que deseja excluir este usuário?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'usuario_delete' 0 %}" id="usuarioDeleteForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="confirmarExclusaoBtn">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function populateUpdateModal(pk, nome, email) {
             document.getElementById('atualizarUsuarioModal').querySelector('input[name="id"]').value = pk;
@@ -135,6 +167,20 @@
             const actionUrl = form.dataset.action.replace(/0/, pk);
             form.action = actionUrl;
         }
+
+        function setUsuarioIdParaExcluir(pk) {
+            const modal = document.getElementById('excluirUsuarioModal');
+            modal.querySelector('input[name="id"]').value = pk;
         
+            // Define a URL correta substituindo '0' pelo pk
+            const form = document.getElementById('usuarioDeleteForm');
+            const actionUrl = form.action.replace(/\/0\//, `/${pk}/`);
+            form.action = actionUrl;
+        
+            // Atualiza o botão de confirmação para que dispare o envio do formulário com a URL correta
+            document.getElementById('confirmarExclusaoBtn').addEventListener('click', function() {
+                form.submit();
+            });
+        }
     </script>    
 {% endblock %}

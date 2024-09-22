@@ -4,11 +4,18 @@
 
 {% block content %}
     <h1>Gestão de Usuários</h1>
+    
     <p class="d-flex justify-content-end"> 
-        <a class="btn btn-secondary"><i class="fa fa-plus mr-2"></i> Novo Usuário</a>
+        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novoUsuarioModal">
+            <i class="fa fa-plus mr-2"></i> Novo Usuário
+        </a>
     </p>
-
     <!-- Tabela para listar os usuários -->
+    <div class="input-group mb-3 mt-4" style="width: 25%;">
+        <input type="text" class="form-control" placeholder="Pesquisar por usuário" aria-label="Pesquisar por nome ou e-mail" aria-describedby="button-addon2">
+        <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+    </div>
+
     <table class="table table-striped mt-4">
         <thead>
             <tr>
@@ -18,61 +25,27 @@
                 <th>Ações</th>
             </tr>
         </thead>
+        {% if usuarios %}
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.nome }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.created_at|date:"d/m/Y - H:i" }}</td>
+                <td>
+                    <a href="{% url 'usuario_update' usuario.pk %}" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
+                    <a href="{% url 'usuario_delete' usuario.pk %}" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        {% else %}
         <tbody>
             <tr>
-                <td>João Silva</td>
-                <td>joao.silva@example.com</td>
-                <td>Segunda-feira, 10 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
+                <td colspan="4" class="text-center">Nenhum usuário cadastrado.</td>
             </tr>
-            <tr>
-                <td>Maria Oliveira</td>
-                <td>maria.oliveira@example.com</td>
-                <td>Terça-feira, 11 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
-            </tr>
-            <tr>
-                <td>Carlos Pereira</td>
-                <td>carlos.pereira@example.com</td>
-                <td>Quarta-feira, 12 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
-            </tr>
-            <tr>
-                <td>Ana Costa</td>
-                <td>ana.costa@example.com</td>
-                <td>Quinta-feira, 13 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
-            </tr>
-            <tr>
-                <td>Lucas Mendes</td>
-                <td>lucas.mendes@example.com</td>
-                <td>Sexta-feira, 14 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
-            </tr>
-            <tr>
-                <td>Juliana Santos</td>
-                <td>juliana@example.com</td>
-                <td>Sábado, 15 de Janeiro de 2022</td>
-                <td>
-                    <a href="#" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
-                    <a href="#" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
-                </td>
         </tbody>
+        {% endif %}
     </table>
 
     <nav aria-label="Page navigation example" class="d-flex justify-content-end mt-4">
@@ -84,4 +57,33 @@
             <li class="page-item"><a style="color: #222;" class="page-link" href="#">Próximo</a></li>
         </ul>
     </nav>
+
+    <!-- Modal para registrar novo usuário -->
+    <div class="modal fade" id="novoUsuarioModal" tabindex="-1" aria-labelledby="novoUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="novoUsuarioModalLabel">Registrar Novo Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'usuario_create' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome completo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Digite o e-mail" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

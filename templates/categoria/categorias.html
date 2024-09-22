@@ -1,0 +1,9 @@
+<h1>Lista de Categorias</h1>
+<a href="{% url 'categoria_create' %}">Nova Categoria</a>
+<a href="{% url 'index' %}">Voltar para a home</a>
+<h4>Categorias de gastos como alimentação, lazer, contas essenciais</h4>
+<ul>
+  {% for categoria in categorias %}
+    <li>{{ categoria.nome }} - <a href="{% url 'categoria_update' categoria.pk %}">Editar</a> | <a href="{% url 'categoria_delete' categoria.pk %}">Excluir</a></li>
+  {% endfor %}
+</ul>

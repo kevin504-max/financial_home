@@ -1,0 +1,26 @@
+<h1>Lista de Recorrências</h1>
+<a href="{% url 'recorrencia_create' %}">Nova Recorrência</a>
+<a href="{% url 'index' %}">Voltar para a home</a>
+
+<h4>Recorrência dos gastos como mensal, anual, quinzenal</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Intervalo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recorrencia in recorrencias %}
+        <tr>
+            <td>{{ recorrencia.nome }}</td>
+            <td>{{ recorrencia.intervalo }}</td>
+            <td>
+                <a href="{% url 'recorrencia_update' recorrencia.pk %}">Editar</a>
+                <a href="{% url 'recorrencia_delete' recorrencia.pk %}">Deletar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

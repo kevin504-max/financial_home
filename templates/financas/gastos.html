@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<body>
+    <h1>Lista de Gastos</h1>
+    <a href="{% url 'gastos_create' %}">Adicionar Novo Gasto</a>
+    <a href="{% url 'index' %}">Voltar para a home</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Método de Pagamento</th>
+                <th>Recorrência</th>
+                <th>Usuário</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gasto in gastos %}
+            <tr>
+                <td>{{ gasto.descricao }}</td>
+                <td>{{ gasto.valor_formatado }}</td>
+                <td>{{ gasto.data|date:"d/m/Y" }}</td>
+                <td>{{ gasto.categoria.nome }}</td>
+                <td>{{ gasto.metodo_pagamento.nome }}</td>
+                <td>{{ gasto.recorrencia.nome }}</td>
+                <td>{{ gasto.usuario.nome }}</td>
+                <td>
+                    <a href="{% url 'gastos_update' gasto.id %}">Editar</a>
+                    <a href="{% url 'gastos_delete' gasto.id %}">Deletar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">Nenhum gasto encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h2>Total de Gastos: {{ total }}</h2>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+</head>
+<body>
+    <h1>Bem-vindo à Página Inicial</h1>
+    <a href="{% url 'categorias' %}">
+        <button>Gerenciar Categorias</button>
+    </a>
+    <a href="{% url 'recorrencias' %}">
+        <button>Gerenciar Recorrências</button>
+    </a>
+    <a href="{% url 'metodos_pagamento' %}">
+        <button>Gerenciar Métodos de Pagamento</button>
+    </a>
+    <a href="{% url 'usuarios' %}">
+        <button>Gerenciar Usuários</button>
+    </a>
+    <a href="{% url 'gastos' %}">
+        <button>Gerenciar Gastos</button>
+    </a>
+</body>
+</html>

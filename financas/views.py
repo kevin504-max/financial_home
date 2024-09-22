@@ -9,8 +9,8 @@ from recorrencia.models import Recorrencia
 from usuarios.models import Usuario
 from utilitarios.filtros import formatar_dinheiro
 
-# def home(request):
-#     return render(request, 'users/home.html')
+def home(request):
+    return render(request, 'users/home.html')
 
 def gastos_create(request):
     form = GastosForm(request.POST or None)

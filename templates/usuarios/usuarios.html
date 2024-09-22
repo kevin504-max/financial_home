@@ -33,7 +33,14 @@
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.created_at|date:"d/m/Y - H:i" }}</td>
                 <td>
-                    <a href="{% url 'usuario_update' usuario.pk %}" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pen"></i></a>
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#atualizarUsuarioModal" 
+                        class="btn btn-sm btn-secondary" 
+                        onclick="populateUpdateModal('{{ usuario.pk }}', '{{ usuario.nome }}', '{{ usuario.email }}');"
+                    >
+                        <i class="fa fa-pen"></i></a>
                     <a href="{% url 'usuario_delete' usuario.pk %}" type="button" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                 </td>
             </tr>
@@ -86,4 +93,48 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para atualizar usuário -->
+    <div class="modal fade" id="atualizarUsuarioModal" tabindex="-1" aria-labelledby="atualizarUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="atualizarUsuarioModalLabel">Atualizar Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="" id="usuarioUpdateForm" data-action="{% url 'usuario_update' 0 %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Atualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function populateUpdateModal(pk, nome, email) {
+            document.getElementById('atualizarUsuarioModal').querySelector('input[name="id"]').value = pk;
+            document.getElementById('atualizarUsuarioModal').querySelector('input[name="nome"]').value = nome;
+            document.getElementById('atualizarUsuarioModal').querySelector('input[name="email"]').value = email;
+        
+            // Define a URL correta substituindo o '0' pelo pk
+            const form = document.getElementById('usuarioUpdateForm');
+            const actionUrl = form.dataset.action.replace(/0/, pk);
+            form.action = actionUrl;
+        }
+        
+    </script>    
 {% endblock %}

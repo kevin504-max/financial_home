@@ -28,7 +28,9 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav fw-bold">
                         <li class="nav-item">
-                            <a class="nav-link" style="color: #e8e8e9;" href="{% url 'home' %}">Tela Inicial</a>
+                            <a class="nav-link" href="{% url 'home' %}"
+                            {% if request.path == '/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
+                            >Tela Inicial</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="color: #e8e8e9;" href="{% url 'gastos' %}">Gastos</a>

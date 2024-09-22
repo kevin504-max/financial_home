@@ -12,9 +12,10 @@
     </p>
 
     <div class="input-group mb-3 mt-4" style="width: 25%;">
-        <input type="text" class="form-control" placeholder="Pesquisar por usuário" aria-label="Pesquisar por nome ou e-mail" aria-describedby="button-addon2">
+        <input type="text" class="form-control" placeholder="Pesquisar por usuário" aria-label="Pesquisar por nome ou e-mail" aria-describedby="button-addon2" id="pesquisaInput">
         <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
     </div>
+    
 
     <table class="table table-striped mt-4">
         <thead>
@@ -182,5 +183,21 @@
                 form.submit();
             });
         }
+
+        document.getElementById('pesquisaInput').addEventListener('input', function() {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll('table tbody tr');
+        
+            linhas.forEach(function(linha) {
+                const nome = linha.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                const email = linha.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                
+                if (nome.includes(filtro) || email.includes(filtro)) {
+                    linha.style.display = ''; // Mostra a linha
+                } else {
+                    linha.style.display = 'none'; // Oculta a linha
+                }
+            });
+        });        
     </script>    
 {% endblock %}

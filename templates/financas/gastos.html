@@ -1,10 +1,22 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<body>
-    <h1>Lista de Gastos</h1>
-    <a href="{% url 'gastos_create' %}">Adicionar Novo Gasto</a>
-    <a href="{% url 'index' %}">Voltar para a home</a>
-    <table>
+{% extends 'base.html' %}
+
+{% block title %}Gestão de Gastos{% endblock %}
+
+{% block content %}
+    <h1>Gestão de Gastos</h1>
+    
+    <p class="d-flex justify-content-end"> 
+        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novoGastoModal">
+            <i class="fa fa-plus mr-2"></i> Adicionar Novo Gasto
+        </a>
+    </p>
+
+    <div class="input-group mb-3 mt-4" style="width: 25%;">
+        <input type="text" class="form-control" placeholder="Pesquisar por gasto" aria-label="Pesquisar por descrição" aria-describedby="button-addon2" id="pesquisaInput">
+        <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+    </div>
+    
+    <table class="table table-striped mt-4">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -17,9 +29,10 @@
                 <th>Ações</th>
             </tr>
         </thead>
+        {% if gastos %}
         <tbody>
             {% for gasto in gastos %}
-            <tr>
+            <tr data-gasto-id="{{ gasto.pk }}">
                 <td>{{ gasto.descricao }}</td>
                 <td>{{ gasto.valor_formatado }}</td>
                 <td>{{ gasto.data|date:"d/m/Y" }}</td>
@@ -28,17 +41,252 @@
                 <td>{{ gasto.recorrencia.nome }}</td>
                 <td>{{ gasto.usuario.nome }}</td>
                 <td>
-                    <a href="{% url 'gastos_update' gasto.id %}">Editar</a>
-                    <a href="{% url 'gastos_delete' gasto.id %}">Deletar</a>
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#atualizarGastoModal" 
+                        class="btn btn-sm btn-secondary" 
+                        onclick="populateUpdateModal('{{ gasto.pk }}', '{{ gasto.descricao }}', '{{ gasto.valor }}', '{{ gasto.data|date:"Y-m-d" }}', '{{ gasto.categoria.pk }}', '{{ gasto.metodo_pagamento.pk }}', '{{ gasto.recorrencia.pk }}', {{ gasto.usuario.pk }});"
+                    >
+                        <i class="fa fa-pen"></i>
+                    </a>
+                    
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#excluirGastoModal" 
+                        class="btn btn-sm btn-danger" 
+                        onclick="setGastoIdParaExcluir('{{ gasto.pk }}');">
+                        <i class="fa fa-trash"></i>
+                    </a>
                 </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8">Nenhum gasto encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
+        {% else %}
+        <tbody>
+            <tr>
+                <td colspan="8" class="text-center">Nenhum gasto cadastrado.</td>
+            </tr>
+        </tbody>
+        {% endif %}
     </table>
-    <h2>Total de Gastos: {{ total }}</h2>
-</body>
-</html>
+
+    <nav aria-label="Page navigation example" class="d-flex justify-content-between mt-4">
+        <p class="mr-3">Valor total: R$ {{ total }}</p>
+
+        <ul class="pagination secondary">
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Anterior</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">1</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">2</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">3</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Próximo</a></li>
+        </ul>
+    </nav>
+
+    <!-- Modal para registrar novo gasto -->
+    <div class="modal fade" id="novoGastoModal" tabindex="-1" aria-labelledby="novoGastoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="novoGastoModalLabel">Registrar Novo Gasto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'gastos_create' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Digite o descricao" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="valor" class="form-label">Valor</label>
+                            <input type="number" class="form-control" id="valor" name="valor" placeholder="Digite o valor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="data" name="data" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <select class="form-control" id="categoria" name="categoria">
+                                {% for categoria in contexto.categorias %}
+                                <option value="{{ categoria.pk }}">{{ categoria.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="metodo_pagamento" class="form-label">Método de Pagamento</label>
+                            <select class="form-control" id="metodo_pagamento" name="metodo_pagamento">
+                                {% for metodo_pagamento in contexto.metodos_pagamento %}
+                                <option value="{{ metodo_pagamento.pk }}">{{ metodo_pagamento.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recorrencia" class="form-label">Recorrência</label>
+                            <select class="form-control" id="recorrencia" name="recorrencia">
+                                {% for recorrencia in contexto.recorrencias %}
+                                <option value="{{ recorrencia.pk }}">{{ recorrencia.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label">Usuário</label>
+                            <select class="form-control" id="usuario" name="usuario">
+                                {% for usuario in contexto.usuarios %}
+                                <option value="{{ usuario.pk }}">{{ usuario.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para atualizar gasto -->
+    <div class="modal fade" id="atualizarGastoModal" tabindex="-1" aria-labelledby="atualizarGastoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="atualizarGastoModalLabel">Atualizar Gasto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="" id="gastoUpdateForm" data-action="{% url 'gastos_update' 0 %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="descricao" name="descricao" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="valor" class="form-label">Valor</label>
+                            <input type="number" class="form-control" id="valor" name="valor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Data</label>
+                            <input type="date" class="form-control" id="data" name="data" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoria" class="form-label">Categoria</label>
+                            <select class="form-control" id="categoria" name="categoria">
+                                {% for categoria in contexto.categorias %}
+                                <option value="{{ categoria.pk }}">{{ categoria.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="metodo_pagamento" class="form-label">Método de Pagamento</label>
+                            <select class="form-control" id="metodo_pagamento" name="metodo_pagamento">
+                                {% for metodo_pagamento in contexto.metodos_pagamento %}
+                                <option value="{{ metodo_pagamento.pk }}">{{ metodo_pagamento.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recorrencia" class="form-label">Recorrência</label>
+                            <select class="form-control" id="recorrencia" name="recorrencia">
+                                {% for recorrencia in contexto.recorrencias %}
+                                <option value="{{ recorrencia.pk }}">{{ recorrencia.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label">Usuário</label>
+                            <select class="form-control" id="usuario" name="usuario">
+                                {% for usuario in contexto.usuarios %}
+                                <option value="{{ usuario.pk }}">{{ usuario.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Atualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para excluir gasto -->
+    <div class="modal fade" id="excluirGastoModal" tabindex="-1" aria-labelledby="excluirGastoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excluirGastoModalLabel">Excluir Gasto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você tem certeza que deseja excluir este gasto?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'gastos_delete' 0 %}" id="gastoDeleteForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="confirmarExclusaoBtn">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function populateUpdateModal(pk, descricao, valor, data, categoria, metodo_pagamento, recorrencia, usuario) {
+            const modal = document.getElementById('atualizarGastoModal');
+            modal.querySelector('input[name="id"]').value = pk;
+            modal.querySelector('input[name="descricao"]').value = descricao;
+            modal.querySelector('input[name="valor"]').value = valor;
+            modal.querySelector('input[name="data"]').value = data;
+            modal.querySelector('select[name="categoria"]').value = categoria;
+            modal.querySelector('select[name="metodo_pagamento"]').value = metodo_pagamento;
+            modal.querySelector('select[name="recorrencia"]').value = recorrencia;
+            modal.querySelector('select[name="usuario"]').value = usuario;
+
+            const form = document.getElementById('gastoUpdateForm');
+            console.log(form.dataset.action)
+            const actionUrl = form.dataset.action.replace(/0/, pk);
+            console.log(actionUrl)
+            form.action = actionUrl;
+        }
+
+        function setGastoIdParaExcluir(pk) {
+            const modal = document.getElementById('excluirGastoModal');
+            modal.querySelector('input[name="id"]').value = pk;
+        
+            // Define a URL correta substituindo '0' pelo pk
+            const form = document.getElementById('gastoDeleteForm');
+            console.log(form.action)
+            const actionUrl = form.action.replace(/\/0\//, `/${pk}/`);
+            console.log(actionUrl)
+            form.action = actionUrl;
+        
+            // Atualiza o botão de confirmação para que dispare o envio do formulário com a URL correta
+            document.getElementById('confirmarExclusaoBtn').addEventListener('click', function() {
+                form.submit();
+            });
+        }
+
+        document.getElementById('pesquisaInput').addEventListener('input', function() {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll('table tbody tr');
+        
+            linhas.forEach(function(linha) {
+                const nome = linha.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                
+                if (nome.includes(filtro)) {
+                    linha.style.display = ''; // Mostra a linha
+                } else {
+                    linha.style.display = 'none'; // Oculta a linha
+                }
+            });
+        });        
+    </script>
+{% endblock %}

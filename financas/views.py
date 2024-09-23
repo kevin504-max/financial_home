@@ -17,13 +17,12 @@ def gastos_create(request):
     
     if form.is_valid():
         dados = form.cleaned_data
+        print('dados: ', dados)
         novo_gasto = GastoFactory.criar_gasto(**dados)
         novo_gasto.save()
 
         return redirect('gastos')
-    else:
-        form = GastosForm()
-
+    
     contexto = {
         'form': form,
         'categorias': Categoria.objects.all(),
@@ -33,6 +32,7 @@ def gastos_create(request):
     }
     return render(request, 'financas/gasto_form.html', contexto)
 
+
 # Read (List)
 def gastos_list(request):
     gastos = Gastos.objects.all()
@@ -40,7 +40,15 @@ def gastos_list(request):
         gasto.valor_formatado = formatar_dinheiro(gasto.valor)
     totalizador = GastoTotalizador()
     total = totalizador.calcular_total(gastos)
-    return render(request, 'financas/gastos.html', {'gastos': gastos, 'total': total})
+
+    contexto = {
+        'categorias': Categoria.objects.all(),
+        'metodos_pagamento': MetodoPagamento.objects.all(),
+        'recorrencias': Recorrencia.objects.all(),
+        'usuarios': Usuario.objects.all(),
+    }
+
+    return render(request, 'financas/gastos.html', {'gastos': gastos, 'total': total, 'contexto': contexto})
 
 # Update
 def gastos_update(request, pk):

@@ -29,17 +29,17 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav fw-bold">
                         <li class="nav-item mr-5">
-                            <a class="nav-link active mr-5" style="color: #e8e8e9;" aria-current="page" href="{% url 'home' %}"
+                            <a class="nav-link active mr-5" aria-current="page" href="{% url 'home' %}"
                             {% if request.path == '/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
                             >Tela Inicial</a>
                         </li>
                         <li class="nav-item mr-5">
-                            <a class="nav-link active mr-5" style="color: #e8e8e9;" aria-current="page" href="{% url 'gastos' %}"
+                            <a class="nav-link active mr-5" aria-current="page" href="{% url 'gastos' %}"
                             {% if request.path == '/gasto/gastos/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
                             >Gastos</a>
                         </li>
                         <li class="nav-item mr-5">
-                            <a class="nav-link active mr-5" style="color: #e8e8e9;" aria-current="page" href="{% url 'categorias' %}"
+                            <a class="nav-link active mr-5" aria-current="page" href="{% url 'categorias' %}"
                             {% if request.path == '/categoria/categorias/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
                             >Categorias</a>
                         </li>
@@ -49,13 +49,13 @@
                             >Usuários</a>
                         </li>
                         <li class="nav-item mr-5">
-                            <a class="nav-link active mr-5" style="color: #e8e8e9;" aria-current="page" href="{% url 'recorrencias' %}"
+                            <a class="nav-link active mr-5" aria-current="page" href="{% url 'recorrencias' %}"
                             {% if request.path == '/recorrencia/recorrencias/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
                             >Recorrências</a>
                         </li>
                         <li class="nav-item mr-5">
-                            <a class="nav-link active mr-5" style="color: #e8e8e9;" aria-current="page" href="{% url 'metodos_pagamento' %}"
-                            {% if request.path == '/metodo-pagamento/metodos-pagamento/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
+                            <a class="nav-link active mr-5" aria-current="page" href="{% url 'metodos_pagamento' %}"
+                            {% if request.path == '/metodo_pagamento/metodos_pagamento/' %} style="color: #ffbb33; text-decoration: underline;" {% else %} style="color: #e8e8e9;"  {% endif %}
                             >Métodos de Pagamentos</a>
                         </li>
                     </ul>

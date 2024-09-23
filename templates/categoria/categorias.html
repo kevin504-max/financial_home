@@ -1,9 +1,188 @@
-<h1>Lista de Categorias</h1>
-<a href="{% url 'categoria_create' %}">Nova Categoria</a>
-<a href="{% url 'index' %}">Voltar para a home</a>
-<h4>Categorias de gastos como alimentação, lazer, contas essenciais</h4>
-<ul>
-  {% for categoria in categorias %}
-    <li>{{ categoria.nome }} - <a href="{% url 'categoria_update' categoria.pk %}">Editar</a> | <a href="{% url 'categoria_delete' categoria.pk %}">Excluir</a></li>
-  {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block title %}Gestão de Categorias{% endblock %}
+
+{% block content %}
+    <h1>Gestão de Categorias</h1>
+    
+    <p class="d-flex justify-content-end"> 
+        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novocategoriaModal">
+            <i class="fa fa-plus mr-2"></i> Nova Categoria
+        </a>
+    </p>
+
+    <div class="input-group mb-3 mt-4" style="width: 25%;">
+        <input type="text" class="form-control" placeholder="Pesquisar por categoria" aria-label="Pesquisar por nome" aria-describedby="button-addon2" id="pesquisaInput">
+        <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+    </div>
+    
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        {% if categorias %}
+        <tbody>
+            {% for categoria in categorias %}
+            <tr data-category-id="{{ categoria.pk }}">
+                <td>{{ categoria.nome }}</td>
+                <td>
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#atualizarcategoriaModal" 
+                        class="btn btn-sm btn-secondary" 
+                        onclick="populateUpdateModal('{{ categoria.pk }}', '{{ categoria.nome }}');"
+                    >
+                        <i class="fa fa-pen"></i>
+                    </a>
+                    
+                    <a 
+                        href="#" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#excluirCategoriaModal" 
+                        class="btn btn-sm btn-danger" 
+                        onclick="setcategoriaIdParaExcluir('{{ categoria.pk }}');">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% else %}
+        <tbody>
+            <tr>
+                <td colspan="4" class="text-center">Nenhuma categoria cadastrado.</td>
+            </tr>
+        </tbody>
+        {% endif %}
+    </table>
+
+    <nav aria-label="Page navigation example" class="d-flex justify-content-end mt-4">
+        <ul class="pagination secondary">
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Anterior</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">1</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">2</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">3</a></li>
+            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Próximo</a></li>
+        </ul>
+    </nav>
+
+    <!-- Modal para registrar novo categoria -->
+    <div class="modal fade" id="novocategoriaModal" tabindex="-1" aria-labelledby="novocategoriaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="novocategoriaModalLabel">Registrar Novo Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'categoria_create' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome completo" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para atualizar categoria -->
+    <div class="modal fade" id="atualizarcategoriaModal" tabindex="-1" aria-labelledby="atualizarcategoriaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="atualizarcategoriaModalLabel">Atualizar Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="" id="categoriaUpdateForm" data-action="{% url 'categoria_update' 0 %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn" style="background-color: #ffbb33; color: #222;">Atualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para excluir categoria -->
+    <div class="modal fade" id="excluirCategoriaModal" tabindex="-1" aria-labelledby="excluirCategoriaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excluirCategoriaModalLabel">Excluir Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você tem certeza que deseja excluir esta categoria?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'categoria_delete' 0 %}" id="categoriaDeleteForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="confirmarExclusaoBtn">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function populateUpdateModal(pk, nome) {
+            document.getElementById('atualizarcategoriaModal').querySelector('input[name="id"]').value = pk;
+            document.getElementById('atualizarcategoriaModal').querySelector('input[name="nome"]').value = nome;
+        
+            // Define a URL correta substituindo o '0' pelo pk
+            const form = document.getElementById('categoriaUpdateForm');
+            const actionUrl = form.dataset.action.replace(/0/, pk);
+            form.action = actionUrl;
+        }
+
+        function setcategoriaIdParaExcluir(pk) {
+            const modal = document.getElementById('excluirCategoriaModal');
+            modal.querySelector('input[name="id"]').value = pk;
+        
+            // Define a URL correta substituindo '0' pelo pk
+            const form = document.getElementById('categoriaDeleteForm');
+            const actionUrl = form.action.replace(/\/0\//, `/${pk}/`);
+            form.action = actionUrl;
+        
+            // Atualiza o botão de confirmação para que dispare o envio do formulário com a URL correta
+            document.getElementById('confirmarExclusaoBtn').addEventListener('click', function() {
+                form.submit();
+            });
+        }
+
+        document.getElementById('pesquisaInput').addEventListener('input', function() {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll('table tbody tr');
+        
+            linhas.forEach(function(linha) {
+                const nome = linha.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                
+                if (nome.includes(filtro)) {
+                    linha.style.display = ''; // Mostra a linha
+                } else {
+                    linha.style.display = 'none'; // Oculta a linha
+                }
+            });
+        });        
+    </script>    
+{% endblock %}

@@ -9,9 +9,11 @@ class CategoriaViewsTest(TestCase):
     def setUp(self):
         # Criação de uma categoria para testes
         self.categoria = Categoria.objects.create(nome='Teste Categoria')
-        print(f'\n>>> Categoria criada: {self.categoria.nome}')
 
     def test_categoria_create(self):
+        print('\n======================================================================================================================')
+        print('\n>>> Iniciando testes de views de categoria...')
+        print('\n======================================================================================================================')
         print('\n>>> Testando a criação de uma nova categoria...')
         response = self.client.post(reverse('categoria_create'), {'nome': 'Nova Categoria'})
         self.assertEqual(response.status_code, 302)  # Redireciona após criar

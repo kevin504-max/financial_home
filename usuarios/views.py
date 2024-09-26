@@ -1,6 +1,26 @@
+import csv
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Usuario
 from .forms import UsuarioForm
+
+def exportar_csv(request):
+    # Cria a resposta HTTP com o cabeçalho correto
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Relação_de_Usuários.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Nome', 'Email', 'Data de Cadastro'])
+
+    usuarios = Usuario.objects.all()
+    for usuario in usuarios:
+        writer.writerow([
+            usuario.nome,
+            usuario.email,
+            usuario.created_at
+        ])
+
+    return response
 
 # Create
 def usuario_create(request):

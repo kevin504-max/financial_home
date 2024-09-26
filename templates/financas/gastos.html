@@ -5,15 +5,54 @@
 {% block content %}
     <h1>Gestão de Gastos</h1>
     
-    <p class="d-flex justify-content-end"> 
-        <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novoGastoModal">
-            <i class="fa fa-plus mr-2"></i> Adicionar Novo Gasto
+    <div class="d-flex justify-content-between align-items-center py-2">
+        <a class="btn btn-secondary me-2" href="{% url 'gastos' %}?mes=&ano=">
+            Mostrar Todos os Gastos
         </a>
-    </p>
+        <p class="my-0"> 
+            <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novoGastoModal">
+                <i class="fa fa-plus mr-2"></i> Adicionar Novo Gasto
+            </a>
+        </p>
+        <div class="input-group" style="width: 25%;">
+            <input type="text" class="form-control" placeholder="Pesquisar por gasto" aria-label="Pesquisar por descrição" aria-describedby="button-addon2" id="pesquisaInput">
+            <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+        </div>
+    </div>
+    <form id="filtro-form" class="d-flex py-2" style="gap: 5px">
+        <select name="mes" class="form-control">
+            <option value="">Selecione o mês</option>
+            {% for mes in contexto.meses %}
+                <option value="{{ mes.0 }}">{{ mes.1 }}</option>
+            {% endfor %}
+        </select>
+        <select name="ano" class="form-control">
+            <option value="">Selecione o ano</option>
+            {% for ano in contexto.anos %}
+                <option value="{{ ano.year }}">{{ ano.year }}</option> 
+            {% endfor %}
+        </select>
+        <div class="col-lg-3">
+            <select name="recorrencia" class="form-control">
+                <option value="">Selecione a recorrência</option>
+                {% for recorrencia in contexto.recorrencias %}
+                    <option value="{{ recorrencia.pk }}">{{ recorrencia.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <select name="categoria" class="form-control">
+                <option value="">Selecione o tipo de gasto</option>
+                {% for categoria in contexto.categorias %}
+                    <option value="{{ categoria.pk }}">{{ categoria.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-dark">Filtrar</button>
+    </form>
 
-    <div class="input-group mb-3 mt-4" style="width: 25%;">
-        <input type="text" class="form-control" placeholder="Pesquisar por gasto" aria-label="Pesquisar por descrição" aria-describedby="button-addon2" id="pesquisaInput">
-        <button class="btn btn-secondary" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+    <div class="col-lg-3">
+        <p class="mr-3 p-2 bg-dark" style="color: white;">Valor total: R$ {{ total }}</p>
     </div>
     
     <table class="table table-striped mt-4">
@@ -72,17 +111,34 @@
         {% endif %}
     </table>
 
-    <nav aria-label="Page navigation example" class="d-flex justify-content-between mt-4">
-        <p class="mr-3">Valor total: R$ {{ total }}</p>
-
-        <ul class="pagination secondary">
-            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Anterior</a></li>
-            <li class="page-item"><a style="color: #222;" class="page-link" href="#">1</a></li>
-            <li class="page-item"><a style="color: #222;" class="page-link" href="#">2</a></li>
-            <li class="page-item"><a style="color: #222;" class="page-link" href="#">3</a></li>
-            <li class="page-item"><a style="color: #222;" class="page-link" href="#">Próximo</a></li>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if gastos.has_previous %}
+                <li class="page-item" style="color: #222;">
+                    <a class="page-link" href="?page=1">Primeira</a>
+                </li>
+                <li class="page-item" style="color: #222;">
+                    <a class="page-link" href="?page={{ gastos.previous_page_number }}">Anterior</a>
+                </li>
+            {% endif %}
+            
+            {% for i in gastos.paginator.page_range %}
+                {% if gastos.number == i %}
+                    <li class="page-item active" style="color: #222;"><span class="page-link">{{ i }}</span></li>
+                {% else %}
+                    <li class="page-item" style="color: #222;"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if gastos.has_next %}
+                <li class="page-item" style="color: #222;">
+                    <a class="page-link" href="?page={{ gastos.next_page_number }}">Próxima</a>
+                </li>
+                <li class="page-item" style="color: #222;">
+                    <a class="page-link" href="?page={{ gastos.paginator.num_pages }}">Última</a>
+                </li>
+            {% endif %}
         </ul>
-    </nav>
 
     <!-- Modal para registrar novo gasto -->
     <div class="modal fade" id="novoGastoModal" tabindex="-1" aria-labelledby="novoGastoModalLabel" aria-hidden="true">

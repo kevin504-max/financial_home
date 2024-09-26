@@ -6,6 +6,10 @@
     <h1>Gestão de Recorrências</h1>
     
     <p class="d-flex justify-content-end"> 
+        <a class="btn btn-secondary" href="{% url 'exportar_recorrencias_csv' %}" style="margin-right: 8px;">
+            <i class="fa fa-download mr-5"></i> Exportar como CSV
+        </a>
+
         <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#novaRecorrenciasModal">
             <i class="fa fa-plus mr-2"></i> Nova Recorrência
         </a>

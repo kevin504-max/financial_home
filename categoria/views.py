@@ -1,6 +1,24 @@
+import csv
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Categoria
 from .forms import CategoriaForm
+
+def exportar_csv(request):
+    # Cria a resposta HTTP com o cabeçalho correto
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Relação_de_Categorias.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Nome'])
+
+    categorias = Categoria.objects.all()
+    for categoria in categorias:
+        writer.writerow([
+            categoria.nome,
+        ])
+
+    return response
 
 def categoria_create(request):
     if request.method == 'POST':

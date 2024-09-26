@@ -5,7 +5,7 @@ from .forms import MetodoPagamentoForm
 from django.core.paginator import Paginator
 
 def metodo_pagamento_list(request):
-    metodos_pagamento = MetodoPagamento.objects.all()
+    metodos_pagamento = MetodoPagamento.objects.all().order_by('nome')
     paginator = Paginator(metodos_pagamento, 6)  
     page_number = request.GET.get('page')
     metodos_pagamento_paginated = paginator.get_page(page_number)

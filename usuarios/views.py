@@ -16,7 +16,7 @@ def usuario_create(request):
 
 # Read (List)
 def usuario_list(request):
-    usuarios = Usuario.objects.all()
+    usuarios = Usuario.objects.all().order_by('nome')
     paginator = Paginator(usuarios, 6)  
     page_number = request.GET.get('page')
     usuarios_paginated = paginator.get_page(page_number)

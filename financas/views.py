@@ -53,7 +53,7 @@ def gastos_list(request):
     if categoria:
         filtros['categoria_id'] = categoria
     
-    gastos = Gastos.objects.filter(**filtros)
+    gastos = Gastos.objects.filter(**filtros).order_by('-data')
     
     for gasto in gastos:
         gasto.valor_formatado = formatar_dinheiro(gasto.valor)

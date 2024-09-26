@@ -15,7 +15,7 @@ def recorrencia_create(request):
     return render(request, 'recorrencia/recorrencia_form.html', {'form': form})
 
 def recorrencia_list(request):
-    recorrencias = Recorrencia.objects.all()
+    recorrencias = Recorrencia.objects.all().order_by('nome')
     paginator = Paginator(recorrencias, 6)  
     page_number = request.GET.get('page')
     recorrencias_paginated = paginator.get_page(page_number)

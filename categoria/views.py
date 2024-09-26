@@ -15,7 +15,7 @@ def categoria_create(request):
     return render(request, 'categoria/categoria_form.html', {'form': form})
 
 def categoria_list(request):
-    categorias = Categoria.objects.all()
+    categorias = Categoria.objects.all().order_by('nome')
     paginator = Paginator(categorias, 6)  
     page_number = request.GET.get('page')
     categorias_paginated = paginator.get_page(page_number)

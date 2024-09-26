@@ -1,3 +1,5 @@
+import csv
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Gastos
 from .forms import GastosForm
@@ -8,6 +10,28 @@ from metodopagamento.models import MetodoPagamento
 from recorrencia.models import Recorrencia 
 from usuarios.models import Usuario
 from utilitarios.filtros import formatar_dinheiro
+
+def exportar_csv(request):
+    # Cria a resposta HTTP com o cabeçalho correto
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Relação_de_Gastos.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Descrição', 'Valor', 'Data', 'Categoria', 'Método de Pagamento', 'Recorrência', 'Usuário'])
+
+    gastos = Gastos.objects.all()
+    for gasto in gastos:
+        writer.writerow([
+            gasto.descricao,
+            gasto.valor,
+            gasto.data,
+            gasto.categoria.nome,
+            gasto.metodo_pagamento.nome,
+            gasto.recorrencia.nome,
+            gasto.usuario.nome
+        ])
+
+    return response
 
 def home(request):
     return render(request, 'home.html')

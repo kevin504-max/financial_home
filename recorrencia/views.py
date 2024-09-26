@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import Recorrencia
 from .forms import RecorrenciaForm
+from django.core.paginator import Paginator
 
-# Create
 def recorrencia_create(request):
     if request.method == 'POST':
         form = RecorrenciaForm(request.POST)
@@ -14,12 +14,14 @@ def recorrencia_create(request):
         form = RecorrenciaForm()
     return render(request, 'recorrencia/recorrencia_form.html', {'form': form})
 
-# Read (List)
 def recorrencia_list(request):
     recorrencias = Recorrencia.objects.all()
-    return render(request, 'recorrencia/recorrencias.html', {'recorrencias': recorrencias})
+    paginator = Paginator(recorrencias, 6)  
+    page_number = request.GET.get('page')
+    recorrencias_paginated = paginator.get_page(page_number)
 
-# Update
+    return render(request, 'recorrencia/recorrencias.html', {'recorrencias': recorrencias_paginated})
+
 def recorrencia_update(request, pk):
     recorrencia = get_object_or_404(Recorrencia, pk=pk)
     if request.method == 'POST':
@@ -31,7 +33,6 @@ def recorrencia_update(request, pk):
         form = RecorrenciaForm(instance=recorrencia)
     return render(request, 'recorrencia/recorrencia_form.html', {'form': form})
 
-# Delete
 def recorrencia_delete(request, pk):
     recorrencia = get_object_or_404(Recorrencia, pk=pk)
     if request.method == 'POST':

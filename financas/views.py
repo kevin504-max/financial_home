@@ -10,6 +10,8 @@ from metodopagamento.models import MetodoPagamento
 from recorrencia.models import Recorrencia 
 from usuarios.models import Usuario
 from utilitarios.filtros import formatar_dinheiro
+from django.core.paginator import Paginator
+
 
 def exportar_csv(request):
     # Cria a resposta HTTP com o cabeçalho correto
@@ -57,22 +59,62 @@ def gastos_create(request):
     return render(request, 'financas/gasto_form.html', contexto)
 
 
-# Read (List)
 def gastos_list(request):
-    gastos = Gastos.objects.all()
+    mes = request.GET.get('mes')
+    ano = request.GET.get('ano')
+    recorrencia = request.GET.get('recorrencia')
+    categoria = request.GET.get('categoria')
+    gastosAll = Gastos.objects.all()
+    
+    filtros = {}
+
+    if mes:
+        filtros['data__month'] = mes
+    if ano:
+        filtros['data__year'] = ano
+    if recorrencia:
+        filtros['recorrencia_id'] = recorrencia
+    if categoria:
+        filtros['categoria_id'] = categoria
+    
+    gastos = Gastos.objects.filter(**filtros).order_by('-data')
+    
     for gasto in gastos:
         gasto.valor_formatado = formatar_dinheiro(gasto.valor)
+
+    meses = [
+        (1, 'Janeiro'),
+        (2, 'Fevereiro'),
+        (3, 'Março'),
+        (4, 'Abril'),
+        (5, 'Maio'),
+        (6, 'Junho'),
+        (7, 'Julho'),
+        (8, 'Agosto'),
+        (9, 'Setembro'),
+        (10, 'Outubro'),
+        (11, 'Novembro'),
+        (12, 'Dezembro'),
+    ]
+
+    anos = gastosAll.dates('data', 'year')  
+    
     totalizador = GastoTotalizador()
     total = totalizador.calcular_total(gastos)
+    paginator = Paginator(gastos, 5)  
+    page_number = request.GET.get('page')
+    gastos_paginated = paginator.get_page(page_number)
 
     contexto = {
         'categorias': Categoria.objects.all(),
         'metodos_pagamento': MetodoPagamento.objects.all(),
         'recorrencias': Recorrencia.objects.all(),
         'usuarios': Usuario.objects.all(),
+        'meses': meses,
+        'anos': anos,
     }
 
-    return render(request, 'financas/gastos.html', {'gastos': gastos, 'total': total, 'contexto': contexto})
+    return render(request, 'financas/gastos.html', {'gastos': gastos_paginated, 'total': total, 'contexto': contexto})
 
 # Update
 def gastos_update(request, pk):

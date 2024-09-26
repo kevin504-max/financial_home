@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Usuario
 from .forms import UsuarioForm
+from django.core.paginator import Paginator
 
 def exportar_csv(request):
     # Cria a resposta HTTP com o cabeçalho correto
@@ -35,8 +36,11 @@ def usuario_create(request):
 
 # Read (List)
 def usuario_list(request):
-    usuarios = Usuario.objects.all()
-    return render(request, 'usuarios/usuarios.html', {'usuarios': usuarios})
+    usuarios = Usuario.objects.all().order_by('nome')
+    paginator = Paginator(usuarios, 6)  
+    page_number = request.GET.get('page')
+    usuarios_paginated = paginator.get_page(page_number)
+    return render(request, 'usuarios/usuarios.html', {'usuarios': usuarios_paginated})
 
 # Update
 def usuario_update(request, pk):

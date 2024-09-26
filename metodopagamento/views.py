@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from .models import MetodoPagamento
 from .forms import MetodoPagamentoForm
+from django.core.paginator import Paginator
 
 def exportar_csv(request):
     # Cria a resposta HTTP com o cabeçalho correto
@@ -22,8 +23,11 @@ def exportar_csv(request):
     return response
 
 def metodo_pagamento_list(request):
-    metodos_pagamento = MetodoPagamento.objects.all()
-    return render(request, 'metodopagamento/metodos_pagamento.html', {'metodos_pagamento': metodos_pagamento})
+    metodos_pagamento = MetodoPagamento.objects.all().order_by('nome')
+    paginator = Paginator(metodos_pagamento, 6)  
+    page_number = request.GET.get('page')
+    metodos_pagamento_paginated = paginator.get_page(page_number)
+    return render(request, 'metodopagamento/metodos_pagamento.html', {'metodos_pagamento': metodos_pagamento_paginated})
 
 def metodo_pagamento_create(request):
     if request.method == 'POST':
